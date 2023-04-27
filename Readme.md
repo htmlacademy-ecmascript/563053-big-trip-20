@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Илья Литвинов](https://up.htmlacademy.ru/ecmascript/20/user/563053).
-* Наставник: `Неизвестно`.
+* Наставник: [Arthur Litovko](https://htmlacademy.ru/profile/id6927).
 
 ---
 

@@ -1,7 +1,7 @@
 import {render, RenderPosition} from './render.js';
 import TitleView from './view/title-view.js';
 import FilterView from './view/filter-view.js';
-import BoardPresenter from './presenter/board-presenter';
+import BoardPresenter from './presenter/board-presenter.js';
 
 const tripMain = document.querySelector('.trip-main');
 const filterForm = document.querySelector('.trip-controls__filters');

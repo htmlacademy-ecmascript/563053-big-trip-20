@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 const getRandomInteger = (min, max) => {
   const lower = Math.ceil(Math.min(Math.abs(min), Math.abs(max)));
   const upper = Math.floor(Math.max(Math.abs(min), Math.abs(max)));
@@ -8,4 +10,8 @@ const getRandomInteger = (min, max) => {
 
 const getRandomArrayElement = (elements) => elements[getRandomInteger(0, elements.length - 1)];
 
-export {getRandomInteger, getRandomArrayElement};
+const formatStringToDateTime = (date) => dayjs(date.format).format('YYYY-MM-DDTHH:mm');
+
+const formatStringToShortDate = (date) => dayjs(date).format('MMM DD');
+
+export {getRandomInteger, getRandomArrayElement, formatStringToDateTime, formatStringToShortDate};

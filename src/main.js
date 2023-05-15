@@ -17,7 +17,7 @@ const destinationsModel = new DestinationsModel(mockService);
 const offersModel = new OfferModel(mockService);
 const pointsModel = new PointsModel(mockService);
 
-const boardPresenter = new BoardPresenter({container: tripEventsContainer}, destinationsModel, offersModel, pointsModel);
+const boardPresenter = new BoardPresenter({container: tripEventsContainer, destinationsModel, offersModel, pointsModel});
 
 render(new TitleView(), tripMain, RenderPosition.AFTERBEGIN);
 render(new FilterView(), filterForm);

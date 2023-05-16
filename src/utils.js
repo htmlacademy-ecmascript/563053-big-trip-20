@@ -10,7 +10,7 @@ const getRandomInteger = (min, max) => {
 
 const getRandomArrayElement = (elements) => elements[getRandomInteger(0, elements.length - 1)];
 
-const formatStringToDateTime = (date) => dayjs(date.format).format('DD/MM/YY HH:mm'); //YYYY-MM-DDTHH
+const formatStringToDateTime = (date) => dayjs(date).format('DD/MM/YY HH:mm'); //YYYY-MM-DDTHH
 
 const formatStringToShortDate = (date) => dayjs(date).format('MMM DD');
 

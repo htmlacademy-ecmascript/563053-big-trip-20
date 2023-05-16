@@ -44,13 +44,10 @@ export default class MockService {
       const type = getRandomArrayElement(TYPES);
       const destination = getRandomArrayElement(this.destinations);
 
-      const hasOffers = getRandomInteger(0, 1);
+      const {offers} = this.offers.find((offerByType) => offerByType.type === type);
+      const offersMaxAmount = offers.length >= OFFER_COUNT ? OFFER_COUNT : offers.length;
 
-      const offersByType = this.offers.find((offerByType) => offerByType.type === type);
-
-      const offerIds = (hasOffers)
-        ? offersByType.offers.slice(0, getRandomInteger(0, OFFER_COUNT)).map((offer) => offer.id) //??
-        : [];
+      const offerIds = Array.from({length: getRandomInteger(0, offersMaxAmount)}, (_, index) => offers[index].id);
 
       return generatePoint(type, destination.id, offerIds);
     });

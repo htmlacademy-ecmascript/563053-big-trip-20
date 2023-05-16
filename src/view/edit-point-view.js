@@ -5,9 +5,10 @@ function getEditPointTemplate ({point, pointDestination, pointOffers}) {
   const {
     basePrice, dateFrom, dateTo, offers, isFavorite, type
   } = point;
-  console.log(point);
-  console.log(pointOffers);
-  console.log(offers);
+  const pointOffer = pointOffers.find((offer) => offer.type === type);
+
+
+  const offersData = offers.length && pointOffer?.offers.filter(({id}) => offers.indexOf(id) !== -1);
 
   const description = pointDestination.find((descPoint) => descPoint.id === point.destination);
   const offersArray = [];

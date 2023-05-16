@@ -1,4 +1,5 @@
 export default class OfferModel {
+
   constructor(service) {
     this.service = service;
     this.offers = this.service.getOffers();

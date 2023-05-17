@@ -14,4 +14,6 @@ const formatStringToDateTime = (date) => dayjs(date).format('DD/MM/YY HH:mm'); /
 
 const formatStringToShortDate = (date) => dayjs(date).format('MMM DD');
 
-export {getRandomInteger, getRandomArrayElement, formatStringToDateTime, formatStringToShortDate};
+const formatStringToTime = (date) => dayjs(date).format('HH:mm');
+
+export {getRandomInteger, getRandomArrayElement, formatStringToDateTime, formatStringToShortDate, formatStringToTime};

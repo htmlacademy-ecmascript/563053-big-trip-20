@@ -25,8 +25,12 @@ export default class BoardPresenter {
       pointOffers: this.offersModel.get()
     }), this.eventListComponent.getElement());
 
-    for (let i = 0; i < 3; i++) {
-      render(new TripItemView(), this.eventListComponent.getElement());
-    }
+    this.boardPoints.forEach((point) => {
+      console.log(point);
+      render(new TripItemView({
+        point1: point,
+        pointOffers: this.offersModel.get()
+      }), this.eventListComponent.getElement());
+    });
   }
 }

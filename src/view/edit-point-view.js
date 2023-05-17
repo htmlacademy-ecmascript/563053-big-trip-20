@@ -3,19 +3,18 @@ import { formatStringToDateTime } from '../utils.js';
 
 function getEditPointTemplate ({point, pointDestination, pointOffers}) {
   const {
-    basePrice, dateFrom, dateTo, offers, isFavorite, type
+    basePrice, dateFrom, dateTo, offers, type
   } = point;
   const pointOffer = pointOffers.find((offer) => offer.type === type);
 
 
-  const offersData = offers.length && pointOffer?.offers.filter(({id}) => offers.indexOf(id) !== -1);
+  const offersData = /*offers.length && */pointOffer.offers.filter(({id}) => offers.indexOf(id) !== -1);
 
   const description = pointDestination.find((descPoint) => descPoint.id === point.destination);
-  const offersArray = [];
 
   function createOfferTemplate () {
 
-    return offersArray.map((offer) =>
+    return offersData.map((offer) =>
       `<div class="event__offer-selector">
     <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
     <label class="event__offer-label" for="event-offer-luggage-1">
@@ -27,7 +26,7 @@ function getEditPointTemplate ({point, pointDestination, pointOffers}) {
     ).join('');
   }
 
-  const offersTemplate = createOfferTemplate(offersArray);
+  const offersTemplate = createOfferTemplate(offersData);
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">

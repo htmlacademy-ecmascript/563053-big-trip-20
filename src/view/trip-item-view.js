@@ -1,21 +1,24 @@
 import { createElement } from '../render.js';
 import { formatStringToShortDate, formatStringToTime } from '../utils.js';
 import dayjs from 'dayjs';
+import duration from 'dayjs';
 
 function createTripItemTemplate({ point, pointOffers }) {
   const {
     basePrice, dateFrom, dateTo, offers, type
   } = point;
 
-  const duration = require('dayjs/plugin/duration');
   dayjs.extend(duration);
 
   console.log(formatStringToTime(dateTo));
 
+  const x = dayjs(dateFrom);
+  const y = dayjs(dateTo);
+
   console.log(pointOffers);
   const pointOffer = pointOffers.find((offer) => offer.type === type);
   const offersData = /*offers.length && */pointOffer.offers.filter(({ id }) => offers.indexOf(id) !== -1);
-  const durationPoint = dayjs.duration(dateFrom.diff(dateTo));
+  const durationPoint = y.diff(x, 'hour');
 
 
   function getOfferTemplate() {

@@ -1,24 +1,13 @@
 import { createElement } from '../render.js';
-import { formatStringToShortDate, formatStringToTime } from '../utils.js';
-import dayjs from 'dayjs';
-import duration from 'dayjs';
+import { formatStringToShortDate, formatStringToTime, getPointDuration } from '../utils.js';
 
 function createTripItemTemplate({ point, pointOffers }) {
   const {
     basePrice, dateFrom, dateTo, offers, type
   } = point;
 
-  dayjs.extend(duration);
-
-  console.log(formatStringToTime(dateTo));
-
-  const x = dayjs(dateFrom);
-  const y = dayjs(dateTo);
-
-  console.log(pointOffers);
   const pointOffer = pointOffers.find((offer) => offer.type === type);
   const offersData = /*offers.length && */pointOffer.offers.filter(({ id }) => offers.indexOf(id) !== -1);
-  const durationPoint = y.diff(x, 'hour');
 
 
   function getOfferTemplate() {
@@ -46,7 +35,7 @@ function createTripItemTemplate({ point, pointOffers }) {
         &mdash;
         <time class="event__end-time" datetime="2019-03-18T11:00">${formatStringToTime(dateTo)}</time>
       </p>
-      <p class="event__duration">${durationPoint}</p>
+      <p class="event__duration">${getPointDuration(dateFrom, dateTo)}</p>
     </div>
     <p class="event__price">
       &euro;&nbsp;<span class="event__price-value">${basePrice}</span>

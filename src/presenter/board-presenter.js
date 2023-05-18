@@ -26,7 +26,6 @@ export default class BoardPresenter {
     }), this.eventListComponent.getElement());
 
     this.boardPoints.forEach((point) => {
-      console.log(point);
       render(new TripItemView({
         point1: point,
         pointOffers: this.offersModel.get()

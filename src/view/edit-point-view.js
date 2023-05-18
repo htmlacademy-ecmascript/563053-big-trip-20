@@ -1,5 +1,6 @@
 import {createElement} from '../render.js';
 import { formatStringToDateTime } from '../utils.js';
+import {POINT_EMPTY} from '../mock/const.js';
 
 function getEditPointTemplate ({point, pointDestination, pointOffers}) {
   const {
@@ -7,10 +8,17 @@ function getEditPointTemplate ({point, pointDestination, pointOffers}) {
   } = point;
   const pointOffer = pointOffers.find((offer) => offer.type === type);
 
-
   const offersData = /*offers.length && */pointOffer.offers.filter(({id}) => offers.indexOf(id) !== -1);
 
-  const description = pointDestination.find((descPoint) => descPoint.id === point.destination);
+  const destination = pointDestination.find((descPoint) => descPoint.id === point.destination);
+
+  function createPhotoTemplate () {
+    return destination.pictures.map((picture) =>
+      `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`
+    ).join('');
+  }
+
+  const photoTemplate = createPhotoTemplate();
 
   function createOfferTemplate () {
 
@@ -135,7 +143,12 @@ function getEditPointTemplate ({point, pointDestination, pointOffers}) {
 
                   <section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                    <p class="event__destination-description">${description.description}</p>
+                    <p class="event__destination-description">${destination.description}</p>
+                    <div class="event__photos-container">
+                      <div class="event__photos-tape">
+                    ${photoTemplate}
+                      </div>
+                    </div>
                   </section>
                 </section>
               </form>
@@ -144,7 +157,7 @@ function getEditPointTemplate ({point, pointDestination, pointOffers}) {
 }
 export default class EditPointView {
 
-  constructor({point, pointDestinations, pointOffers}) {
+  constructor({point = POINT_EMPTY, pointDestinations, pointOffers}) {
     this.point = point;
     this.pointDestination = pointDestinations;
     this.pointOffers = pointOffers;

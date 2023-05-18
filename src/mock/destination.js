@@ -1,4 +1,4 @@
-import { getRandomArrayElement, getRandomInteger } from '../utils.js';
+import { getRandomArrayElement } from '../utils.js';
 import { CITIES, DESCRIPTION } from './const.js';
 
 function generateDestination() {
@@ -10,7 +10,11 @@ function generateDestination() {
     name: city,
     pictures: [
       {
-        'src': `https://loremflickr.com/248/152?random=${getRandomInteger(1, 100)}`,
+        'src': `https://loremflickr.com/248/152?random=${crypto.randomUUID()}`,
+        'description': `${city} description`
+      },
+      {
+        'src': `https://loremflickr.com/248/152?random=${crypto.randomUUID()}`,
         'description': `${city} description`
       }
     ]

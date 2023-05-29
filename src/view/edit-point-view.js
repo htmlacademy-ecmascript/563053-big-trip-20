@@ -1,6 +1,6 @@
-import {createElement} from '../render.js';
 import { formatStringToDateTime } from '../utils.js';
 import {POINT_EMPTY} from '../mock/const.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function getEditPointTemplate ({point, pointDestination, pointOffers}) {
   const {
@@ -155,31 +155,24 @@ function getEditPointTemplate ({point, pointDestination, pointOffers}) {
               </li>
 `;
 }
-export default class EditPointView {
+export default class EditPointView extends AbstractView {
+
+  #point = null;
+  #pointDestination = null;
+  #pointOffers = null;
 
   constructor({point = POINT_EMPTY, pointDestinations, pointOffers}) {
-    this.point = point;
-    this.pointDestination = pointDestinations;
-    this.pointOffers = pointOffers;
+    super();
+    this.#point = point;
+    this.#pointDestination = pointDestinations;
+    this.#pointOffers = pointOffers;
   }
 
-  getTemplate() {
+  get template() {
     return getEditPointTemplate({
-      point: this.point,
-      pointDestination: this.pointDestination,
-      pointOffers: this.pointOffers
+      point: this.#point,
+      pointDestination: this.#pointDestination,
+      pointOffers: this.#pointOffers
     });
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

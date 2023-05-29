@@ -1,35 +1,43 @@
-import {render} from '../render.js';
+import {render} from '../framework/render.js';
 import EventListView from '../view/event-list-view.js';
 import SortView from '../view/sort-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import TripItemView from '../view/trip-item-view.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
-export default class BoardPresenter {
-  eventListComponent = new EventListView();
+export default class BoardPresenter extends AbstractView {
+  #eventListComponent = new EventListView();
+  #container = null;
+  #destinationModel = null;
+  #offersModel = null;
+  #pointsModel = null;
+  #boardPoints = null;
 
   constructor({container, destinationsModel, offersModel, pointsModel}) {
-    this.container = container;
-    this.destinationModel = destinationsModel;
-    this.offersModel = offersModel;
-    this.pointsModel = pointsModel;
+    super();
+    this.#container = container;
+    this.#destinationModel = destinationsModel;
+    this.#offersModel = offersModel;
+    this.#pointsModel = pointsModel;
 
-    this.boardPoints = [...pointsModel.get()];
+    this.#boardPoints = [...pointsModel.points];
   }
 
   init() {
-    render(new SortView(), this.container);
-    render(this.eventListComponent, this.container);
-    render(new EditPointView({
-      point: this.boardPoints[0],
-      pointDestinations: this.destinationModel.get(),
-      pointOffers: this.offersModel.get()
-    }), this.eventListComponent.getElement());
+    render(new SortView(), this.#container);
+    render(this.#eventListComponent, this.#container);
 
-    this.boardPoints.forEach((point) => {
+    /*render(new EditPointView({
+      point: this.#boardPoints[0],
+      pointDestinations: this.#destinationModel.destinations,
+      pointOffers: this.#offersModel.offers
+    }), this.#eventListComponent.element);*/
+
+    this.#boardPoints.forEach((point) => {
       render(new TripItemView({
         point1: point,
-        pointOffers: this.offersModel.get()
-      }), this.eventListComponent.getElement());
+        pointOffers: this.#offersModel.offers
+      }), this.#eventListComponent.element);
     });
   }
 }

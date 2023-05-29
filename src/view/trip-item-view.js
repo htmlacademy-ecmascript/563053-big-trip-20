@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { formatStringToShortDate, formatStringToTime, getPointDuration } from '../utils.js';
 
 function createTripItemTemplate({ point, pointOffers }) {
@@ -57,29 +57,21 @@ function createTripItemTemplate({ point, pointOffers }) {
 </li>`;
 }
 
-export default class TripItemView {
+export default class TripItemView extends AbstractView {
+
+  #point = null;
+  #pointOffers = null;
 
   constructor({ point1, pointOffers }) {
-    this.point = point1;
-    this.pointOffers = pointOffers;
+    super();
+    this.#point = point1;
+    this.#pointOffers = pointOffers;
   }
 
-  getTemplate() {
+  get template() {
     return createTripItemTemplate({
-      point: this.point,
-      pointOffers: this.pointOffers
+      point: this.#point,
+      pointOffers: this.#pointOffers
     });
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

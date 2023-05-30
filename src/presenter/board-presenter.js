@@ -62,10 +62,6 @@ export default class BoardPresenter extends AbstractView {
         replaceFormToPoints();
         document.removeEventListener('keydown', onEscKeydown);
       },
-      onEditClickHandler: () => {
-        replaceFormToPoints();
-        document.addEventListener('keydown', onEscKeydown);
-      }
     });
 
     function replacePointsToForm() {

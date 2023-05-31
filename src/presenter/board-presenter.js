@@ -3,9 +3,8 @@ import EventListView from '../view/event-list-view.js';
 import SortView from '../view/sort-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import TripItemView from '../view/trip-item-view.js';
-import AbstractView from '../framework/view/abstract-view.js';
 
-export default class BoardPresenter extends AbstractView {
+export default class BoardPresenter {
   #eventListComponent = new EventListView();
   #container = null;
   #destinationModel = null;
@@ -14,7 +13,6 @@ export default class BoardPresenter extends AbstractView {
   #boardPoints = null;
 
   constructor({container, destinationsModel, offersModel, pointsModel}) {
-    super();
     this.#container = container;
     this.#destinationModel = destinationsModel;
     this.#offersModel = offersModel;

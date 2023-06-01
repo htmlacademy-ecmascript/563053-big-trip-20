@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { getRandomInteger } from '../utils.js';
 import { Price } from './const.js';
 import { getDate } from './utils.js';
@@ -15,4 +16,16 @@ function generatePoint(type, destinationID, offerIDs) {
   };
 }
 
-export {generatePoint};
+function isPointFuture(point) {
+  return dayjs().isBefore(point.dateFrom);
+}
+
+function isPointPresent(point) {
+  return (dayjs().isAfter(point.dateFrom) && dayjs().isBefore(point.dateTo));
+}
+
+function isPointPast(point) {
+  return dayjs().isAfter(point.dateTo);
+}
+
+export {generatePoint, isPointFuture, isPointPresent, isPointPast};

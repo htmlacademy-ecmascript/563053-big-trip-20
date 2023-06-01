@@ -1,6 +1,6 @@
-import {createElement} from '../render.js';
 import { formatStringToDateTime } from '../utils.js';
 import {POINT_EMPTY} from '../mock/const.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function getEditPointTemplate ({point, pointDestination, pointOffers}) {
   const {
@@ -155,31 +155,34 @@ function getEditPointTemplate ({point, pointDestination, pointOffers}) {
               </li>
 `;
 }
-export default class EditPointView {
+export default class EditPointView extends AbstractView {
 
-  constructor({point = POINT_EMPTY, pointDestinations, pointOffers}) {
-    this.point = point;
-    this.pointDestination = pointDestinations;
-    this.pointOffers = pointOffers;
+  #point = null;
+  #pointDestination = null;
+  #pointOffers = null;
+  #onFormSubmit = null;
+
+  constructor({point = POINT_EMPTY, pointDestinations, pointOffers, onFormSubmit}) {
+    super();
+    this.#point = point;
+    this.#pointDestination = pointDestinations;
+    this.#pointOffers = pointOffers;
+    this.#onFormSubmit = onFormSubmit;
+
+    this.element.querySelector('form').addEventListener('submit', this.#onFormSubmitClick);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onFormSubmitClick);
   }
 
-  getTemplate() {
+  get template() {
     return getEditPointTemplate({
-      point: this.point,
-      pointDestination: this.pointDestination,
-      pointOffers: this.pointOffers
+      point: this.#point,
+      pointDestination: this.#pointDestination,
+      pointOffers: this.#pointOffers
     });
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #onFormSubmitClick = (evt) => {
+    evt.preventDefault();
+    this.#onFormSubmit();
+  };
 }

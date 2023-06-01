@@ -1,8 +1,8 @@
-import {render, RenderPosition} from './render.js';
+import {render, RenderPosition} from '../src/framework/render.js';
 
 import TitleView from './view/title-view.js';
-import FilterView from './view/filter-view.js';
 import BoardPresenter from './presenter/board-presenter.js';
+import FilterPresenter from './presenter/filter-presenter.js';
 
 import MockService from './service/mock-service.js';
 import DestinationsModel from './model/destination-model.js';
@@ -17,9 +17,14 @@ const destinationsModel = new DestinationsModel(mockService);
 const offersModel = new OfferModel(mockService);
 const pointsModel = new PointsModel(mockService);
 
+const filterPresenter = new FilterPresenter({
+  container: filterForm,
+  pointsModel
+});
+
 const boardPresenter = new BoardPresenter({container: tripEventsContainer, destinationsModel, offersModel, pointsModel});
 
 render(new TitleView(), tripMain, RenderPosition.AFTERBEGIN);
-render(new FilterView(), filterForm);
 
+filterPresenter.init();
 boardPresenter.init();

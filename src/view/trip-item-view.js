@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { formatStringToShortDate, formatStringToTime, getPointDuration } from '../utils.js';
 
 function createTripItemTemplate({ point, pointOffers }) {
@@ -57,29 +57,30 @@ function createTripItemTemplate({ point, pointOffers }) {
 </li>`;
 }
 
-export default class TripItemView {
+export default class TripItemView extends AbstractView {
 
-  constructor({ point1, pointOffers }) {
-    this.point = point1;
-    this.pointOffers = pointOffers;
+  #point = null;
+  #pointOffers = null;
+  #onEditClickHandler = null;
+
+  constructor({ point1, pointOffers, onEditClickHandler }) {
+    super();
+    this.#point = point1;
+    this.#pointOffers = pointOffers;
+    this.#onEditClickHandler = onEditClickHandler;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onEditClick);
   }
 
-  getTemplate() {
+  get template() {
     return createTripItemTemplate({
-      point: this.point,
-      pointOffers: this.pointOffers
+      point: this.#point,
+      pointOffers: this.#pointOffers
     });
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #onEditClick = (evt) => {
+    evt.preventDefault();
+    this.#onEditClickHandler();
+  };
 }

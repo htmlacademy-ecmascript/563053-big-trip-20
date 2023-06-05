@@ -1,6 +1,6 @@
 import FilterView from '../view/filter-view.js';
 
-import {generateFilters} from '../mock/filter.js';
+import {generateFilters} from '../utils/filter.js';
 import {render} from '../framework/render.js';
 
 export default class FilterPresenter {

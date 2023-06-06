@@ -1,0 +1,73 @@
+import { render, replace } from '../framework/render.js';
+import EditPointView from '../view/edit-point-view.js';
+import TripItemView from '../view/trip-item-view.js';
+import EventListView from '../view/event-list-view.js';
+
+export default class PointPresenter {
+  #container = null;
+  #point = null;
+  #pointComponent = null;
+  #destinationModel = null;
+  #offersModel = null;
+  #editPointComponent = null;
+  #pointsModel = null;
+  #eventListComponent = new EventListView();
+
+
+  constructor({container, destinationsModel, offersModel, pointsModel}) {
+    this.#container = container;
+    this.#destinationModel = destinationsModel;
+    this.#offersModel = offersModel;
+    this.#pointsModel = pointsModel;
+  }
+
+  init(point) {
+
+    this.#point = point;
+
+    const prevPointComponent = this.#pointComponent;
+    const prevPointEditComponent = this.#editPointComponent;
+
+    this.#pointComponent = new TripItemView({
+      point1: this.#point,
+      pointOffers: this.#offersModel.offers,
+      onEditClickHandler: () => {
+        replacePointsToForm();
+        document.addEventListener('keydown', onEscKeydown);
+      }
+    });
+
+    const onEscKeydown = (evt) => {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        replaceFormToPoints();
+        document.removeEventListener('keydown', onEscKeydown);
+      }
+    };
+
+    this.#editPointComponent = new EditPointView({
+      point: point,
+      pointDestinations: this.#destinationModel.destinations,
+      pointOffers: this.#offersModel.offers,
+      onFormSubmit: () => {
+        replaceFormToPoints();
+        document.removeEventListener('keydown', onEscKeydown);
+      },
+    });
+
+    if (prevPointComponent === null || prevPointEditComponent === null) {
+      render(this.#pointComponent, this.#container);
+      return;
+    }
+
+    function replacePointsToForm() {
+      replace(this.#editPointComponent, this.#pointComponent);
+    }
+
+    function replaceFormToPoints() {
+      replace(this.#pointComponent, this.#editPointComponent);
+    }
+
+    render(this.#pointComponent, this.#eventListComponent.element);
+  }
+}

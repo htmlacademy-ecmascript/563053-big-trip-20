@@ -1,8 +1,7 @@
 import {render, replace} from '../framework/render.js';
 import EventListView from '../view/event-list-view.js';
 import SortView from '../view/sort-view.js';
-import EditPointView from '../view/edit-point-view.js';
-import TripItemView from '../view/trip-item-view.js';
+import PointPresenter from './point-presenter';
 
 export default class BoardPresenter {
   #eventListComponent = new EventListView();
@@ -11,6 +10,7 @@ export default class BoardPresenter {
   #offersModel = null;
   #pointsModel = null;
   #boardPoints = null;
+  #sortComponent = new SortView();
 
   constructor({container, destinationsModel, offersModel, pointsModel}) {
     this.#container = container;
@@ -22,54 +22,37 @@ export default class BoardPresenter {
   }
 
   init() {
-    render(new SortView(), this.#container);
-    render(this.#eventListComponent, this.#container);
+    this.#renderBoard();
+  }
 
-    /*render(new EditPointView({
-      point: this.#boardPoints[0],
-      pointDestinations: this.#destinationModel.destinations,
-      pointOffers: this.#offersModel.offers
-    }), this.#eventListComponent.element);*/
+  #renderSort() {
+    render(this.#sortComponent, this.#container);
+  }
 
+  #renderPoints() {
     this.#boardPoints.forEach((point) => {
       this.#renderPoint(point);
     });
   }
 
-  #renderPoint(point) {
-    const onEscKeydown = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceFormToPoints();
-        document.removeEventListener('keydown', onEscKeydown);
-      }
-    };
-    const pointComponent = new TripItemView({
-      point1: point,
-      pointOffers: this.#offersModel.offers,
-      onEditClickHandler: () => {
-        replacePointsToForm();
-        document.addEventListener('keydown', onEscKeydown);
-      }
-    });
-    const editPointComponent = new EditPointView({
-      point: point,
-      pointDestinations: this.#destinationModel.destinations,
-      pointOffers: this.#offersModel.offers,
-      onFormSubmit: () => {
-        replaceFormToPoints();
-        document.removeEventListener('keydown', onEscKeydown);
-      },
+  #renderListComponent() {
+    render(this.#eventListComponent, this.#container);
+  }
+
+  #renderPoint = (point) => {
+
+    const pointPresenter = new PointPresenter({
+      container: this.#eventListComponent.element,
+      destinationModel: this.#destinationModel,
+      offersModel: this.#offersModel,
     });
 
-    function replacePointsToForm() {
-      replace(editPointComponent, pointComponent);
-    }
+    pointPresenter.init(point);
+  };
 
-    function replaceFormToPoints() {
-      replace(pointComponent, editPointComponent);
-    }
-
-    render(pointComponent, this.#eventListComponent.element);
+  #renderBoard() {
+    this.#renderSort();
+    this.#renderListComponent();
+    this.#renderPoints();
   }
 }

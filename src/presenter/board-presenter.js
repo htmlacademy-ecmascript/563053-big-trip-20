@@ -1,7 +1,8 @@
-import {render, replace} from '../framework/render.js';
+import {render} from '../framework/render.js';
+import { updateItem } from '../utils/common.js';
 import EventListView from '../view/event-list-view.js';
 import SortView from '../view/sort-view.js';
-import PointPresenter from './point-presenter';
+import PointPresenter from './point-presenter.js';
 
 export default class BoardPresenter {
   #eventListComponent = new EventListView();
@@ -9,20 +10,38 @@ export default class BoardPresenter {
   #destinationModel = null;
   #offersModel = null;
   #pointsModel = null;
-  #boardPoints = null;
+  #boardPoints = [];
+  #sourcedBoardPoints = [];
   #sortComponent = new SortView();
+  #pointPresenters = new Map();
 
   constructor({container, destinationsModel, offersModel, pointsModel}) {
     this.#container = container;
     this.#destinationModel = destinationsModel;
     this.#offersModel = offersModel;
     this.#pointsModel = pointsModel;
-
-    this.#boardPoints = [...pointsModel.points];
   }
 
   init() {
+    this.#boardPoints = [...this.#pointsModel.points];
+    this.#sourcedBoardPoints = [...this.#pointsModel.points];
+
     this.#renderBoard();
+  }
+
+  #handleTaskChange = (updatedPoint) => {
+    this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
+    this.#sourcedBoardPoints = updateItem(this.#sourcedBoardPoints, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
+
+  #handleModeChange = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #clearPoints() {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
   }
 
   #renderSort() {
@@ -45,9 +64,12 @@ export default class BoardPresenter {
       container: this.#eventListComponent.element,
       destinationModel: this.#destinationModel,
       offersModel: this.#offersModel,
+      onDataChange: this.#handleTaskChange,
+      onModeChange: this.#handleModeChange
     });
 
     pointPresenter.init(point);
+    this.#pointPresenters.set(point.id, pointPresenter);
   };
 
   #renderBoard() {

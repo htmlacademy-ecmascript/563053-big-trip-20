@@ -32,6 +32,7 @@ export default class BoardPresenter {
     this.#renderBoard();
   }
 
+
   #handleTaskChange = (updatedPoint) => {
     this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
     this.#sourcedBoardPoints = updateItem(this.#sourcedBoardPoints, updatedPoint);

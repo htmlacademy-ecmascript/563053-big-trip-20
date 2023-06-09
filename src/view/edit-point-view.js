@@ -1,8 +1,10 @@
 import { formatStringToDateTime } from '../utils.js';
 import {POINT_EMPTY} from '../mock/const.js';
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
-function getEditPointTemplate ({point, pointDestination, pointOffers}) {
+function getEditPointTemplate ({state, pointDestination, pointOffers}) {
+  const {point} = state;
+
   const {
     basePrice, dateFrom, dateTo, offers, type
   } = point;
@@ -134,19 +136,26 @@ function getEditPointTemplate ({point, pointDestination, pointOffers}) {
               </li>
 `;
 }
-export default class EditPointView extends AbstractView {
+export default class EditPointView extends AbstractStatefulView {
 
   #point = null;
   #pointDestination = null;
   #pointOffers = null;
   #onFormSubmit = null;
+  #onResetClick = null;
 
-  constructor({point = POINT_EMPTY, pointDestinations, pointOffers, onFormSubmit}) {
+  constructor({point = POINT_EMPTY, pointDestinations, pointOffers, onFormSubmit, onResetClick}) {
     super();
     this.#point = point;
     this.#pointDestination = pointDestinations;
     this.#pointOffers = pointOffers;
+
+    this._setState(EditPointView.parsePointToState({point}));
+
     this.#onFormSubmit = onFormSubmit;
+    this.#onResetClick = onResetClick;
+
+    this._restoreHandlers();
 
     this.element.querySelector('form').addEventListener('submit', this.#onFormSubmitClick);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onFormSubmitClick);
@@ -154,14 +163,95 @@ export default class EditPointView extends AbstractView {
 
   get template() {
     return getEditPointTemplate({
+      state: this._state,
       point: this.#point,
       pointDestination: this.#pointDestination,
       pointOffers: this.#pointOffers
     });
   }
 
+  #offerClickHandler = (evt) => {
+    evt.preventDefault();
+
+    const checkedBoxes = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+
+    this._setState({
+      point: {
+        ...this._state.point,
+        offers: checkedBoxes.map((element) => element.dataset.offerId)
+      }
+    });
+  };
+
+  #typeInputClick = (evt) => {
+    evt.preventDefault();
+
+    this.updateElement({
+      point: {
+        ...this._state.point,
+        type: evt.target.value,
+        offers: []
+      }
+    });
+  };
+
+  #priceInputChange = (evt) => {
+    evt.preventDefault();
+
+    this._setState({
+      point: {
+        ...this._state.point,
+        basePrice: evt.target.valueAsNumber
+      }
+    });
+  };
+
+  #destinationInputChange = (evt) => {
+    evt.preventDefault();
+
+    const selectedDestinations = this.#pointDestination.find((pointDestination) => pointDestination.name === evt.target);
+
+    const selectedDestinationId = (selectedDestinations) ? selectedDestinations.id : null;
+
+    this.updateElement({
+      point: {
+        ...this._state.point,
+        destination: selectedDestinationId
+      }
+    });
+  };
+
+  reset = (point) => this.updateElement({point});
+
+  _restoreHandlers = () => {
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onResetButtonClick);
+
+    this.element.querySelector('form').addEventListener('submit', this.#onFormSubmitClick);
+
+    this.element.querySelectorAll('.event__type-input').forEach((element) => {
+      element.addEventListener('change', this.#typeInputClick);
+    });
+
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationInputChange);
+
+    const offerBlock = this.element.querySelector('.event__available-offers');
+
+    if (offerBlock) {
+      offerBlock.addEventListener('change', this.#offerClickHandler);
+    }
+  };
+
   #onFormSubmitClick = (evt) => {
     evt.preventDefault();
-    this.#onFormSubmit(this.#point);
+    this.#onFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
+
+  #onResetButtonClick = (evt) => {
+    evt.preventDefault();
+    this.#onResetClick();
+  };
+
+  static parsePointToState = ({point}) => ({point});
+
+  static parseStateToPoint = (state) => state.point;
 }

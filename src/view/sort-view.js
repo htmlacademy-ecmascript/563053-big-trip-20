@@ -12,8 +12,8 @@ function createSortItem({id, text, checked, disabled} = DEFAULT_FILTERS) {
 
 
   return `<div class="trip-sort__item  trip-sort__item--${id}">
-  <input id="sort-${id}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${id}" ${checked ? 'checked' : ''} ${disabled ? 'disabled' : ''}>
-  <label class="trip-sort__btn" for="sort-${id}" data-sort-type="${id}">${text}</label>
+  <input id="sort-${id}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="${id}" ${checked ? 'checked' : ''} ${disabled ? 'disabled' : ''}>
+  <label class="trip-sort__btn" for="sort-${id}">${text}</label>
 </div>`;
 }
 
@@ -35,7 +35,7 @@ export default class SortView extends AbstractView {
     super();
     this.#handleSortTypeChange = onSortTypeChange;
 
-    this.element.addEventListener('click', this.#sortTypeChangeHandler);
+    this.element.addEventListener('change', this.#sortTypeChangeHandler);
   }
 
   get template() {
@@ -43,7 +43,6 @@ export default class SortView extends AbstractView {
   }
 
   #sortTypeChangeHandler = (evt) => {
-    evt.preventDefault();
-    this.#handleSortTypeChange(evt.target.dataset.sortType);
+    this.#handleSortTypeChange(evt.target.value);
   };
 }

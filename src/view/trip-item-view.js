@@ -1,14 +1,15 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { formatStringToShortDate, formatStringToTime, getPointDuration } from '../utils.js';
 
-function createTripItemTemplate({ point, pointOffers }) {
+function createTripItemTemplate({ point, pointDestinations, pointOffers }) {
   const {
-    basePrice, dateFrom, dateTo, offers, type
+    basePrice, dateFrom, dateTo, destination, offers, type
   } = point;
 
   const pointOffer = pointOffers.find((offer) => offer.type === type);
   const offersData = /*offers.length && */pointOffer.offers.filter(({ id }) => offers.indexOf(id) !== -1);
 
+  const pointDestination = pointDestinations.filter(({ id }) => destination.indexOf(id) !== -1);
 
   function getOfferTemplate() {
     return offersData.map((offer) =>
@@ -28,7 +29,7 @@ function createTripItemTemplate({ point, pointOffers }) {
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
     </div>
-    <h3 class="event__title">${type} Amsterdam</h3>
+    <h3 class="event__title">${type} ${pointDestination[0].name}</h3>
     <div class="event__schedule">
       <p class="event__time">
         <time class="event__start-time" datetime="${dateFrom}">${formatStringToTime(dateFrom)}</time>
@@ -63,13 +64,15 @@ export default class TripItemView extends AbstractView {
   #pointOffers = null;
   #onEditClickHandler = null;
   #onFavoriteClick = null;
+  #pointDestinations = null;
 
-  constructor({ point1, pointOffers, onEditClickHandler, onFavoriteClick }) {
+  constructor({ point1, pointDestinations, pointOffers, onEditClick, onFavoriteClick }) {
     super();
     this.#point = point1;
     this.#pointOffers = pointOffers;
-    this.#onEditClickHandler = onEditClickHandler;
+    this.#onEditClickHandler = onEditClick;
     this.#onFavoriteClick = onFavoriteClick;
+    this.#pointDestinations = pointDestinations;
 
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onEditClick);
     this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteClickHandler);
@@ -78,7 +81,8 @@ export default class TripItemView extends AbstractView {
   get template() {
     return createTripItemTemplate({
       point: this.#point,
-      pointOffers: this.#pointOffers
+      pointOffers: this.#pointOffers,
+      pointDestinations: this.#pointDestinations
     });
   }
 

@@ -1,5 +1,5 @@
-function updateItem(items, update) {
-  return items.map((item) => item.id === update.id ? update : item);
+function updateItem(items, itemToUpdate) {
+  return items.map((item) => item.id === itemToUpdate.id ? itemToUpdate : item);
 }
 
 export {updateItem};

@@ -16,7 +16,7 @@ export default class PointPresenter {
   #editPointComponent = null;
   #handleDataChange = null;
   #handleModeChange = null;
-
+  #pointOffers = null;
   #mode = Mode.DEFAULT;
 
   constructor({container, destinationModel, offersModel, onDataChange, onModeChange}) {
@@ -34,26 +34,23 @@ export default class PointPresenter {
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#editPointComponent;
 
+
     this.#pointComponent = new TripItemView({
       point1: this.#point,
+      pointDestinations: this.#destinationModel.destinations,
       pointOffers: this.#offersModel.offers,
-      onEditClickHandler: () => {
-        this.#replacePointsToForm();
-        document.addEventListener('keydown', this.#onEscKeydown);
-      },
+      onEditClick: this.#handleClickEdit,
       onFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#editPointComponent = new EditPointView({
-      point: point,
+      point,
       pointDestinations: this.#destinationModel.destinations,
-      pointOffers: this.#offersModel.offers,
-      onFormSubmit: () => {
-        this.#handleDataChange(point);
-        this.#replaceFormToPoints();
-        document.removeEventListener('keydown', this.#onEscKeydown);
-      },
-    });
+      offers: this.#offersModel.getByType(point.type),
+      onFormSubmit: this.#handleFormSubmit,
+      onCloseClick: this.#handleClickClose,
+      getOffersByType: (type) => this.#offersModel.getByType(type)}
+    );
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       return render(this.#pointComponent, this.#container);
@@ -75,6 +72,8 @@ export default class PointPresenter {
     remove(this.#pointComponent);
     remove(this.#editPointComponent);
   }
+
+  #onChangeOfferType = () => this.#offersModel.getByType(this.point.type);
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
@@ -104,4 +103,20 @@ export default class PointPresenter {
     replace(this.#pointComponent, this.#editPointComponent);
     this.#mode = Mode.DEFAULT;
   }
+
+  #handleFormSubmit = (point) => {
+    this.#handleDataChange(point);
+    this.#replaceFormToPoints();
+    document.removeEventListener('keydown', this.#onEscKeydown);
+  };
+
+  #handleClickEdit = () => {
+    this.#replacePointsToForm();
+    document.addEventListener('keydown', this.#onEscKeydown);
+  };
+
+  #handleClickClose = () => {
+    this.#replaceFormToPoints();
+    document.addEventListener('keydown', this.#onEscKeydown);
+  };
 }

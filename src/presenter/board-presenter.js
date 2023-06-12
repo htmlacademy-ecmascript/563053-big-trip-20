@@ -82,9 +82,7 @@ export default class BoardPresenter {
   }
 
   #renderPoints() {
-    this.#boardPoints.forEach((point) => {
-      this.#renderPoint(point);
-    });
+    this.#boardPoints.forEach(this.#renderPoint);
   }
 
   #renderListComponent() {

@@ -10,7 +10,7 @@ function createFilterItem (filter) {
 function createFilterViewTemplate (filters) {
   return `
     <form class="trip-filters" action="#" method="get">
-      ${filters.map(createFilterItem).join('')}
+      ${filters.filters.map(createFilterItem).join('')}
 
       <button class="visually-hidden" type="submit">Accept filter</button>
     </form>`;

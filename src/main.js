@@ -8,6 +8,7 @@ import MockService from './service/mock-service.js';
 import DestinationsModel from './model/destination-model.js';
 import OfferModel from './model/offers-model.js';
 import PointsModel from './model/points-model.js';
+import FilterModel from './model/filter-model.js';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration.js';
 
@@ -20,13 +21,15 @@ const mockService = new MockService();
 const destinationsModel = new DestinationsModel(mockService);
 const offersModel = new OfferModel(mockService);
 const pointsModel = new PointsModel(mockService);
+const filterModel = new FilterModel();
 
 const filterPresenter = new FilterPresenter({
   container: filterForm,
-  pointsModel
+  pointsModel,
+  filterModel
 });
 
-const boardPresenter = new BoardPresenter({container: tripEventsContainer, destinationsModel, offersModel, pointsModel});
+const boardPresenter = new BoardPresenter({container: tripEventsContainer, destinationsModel, offersModel, pointsModel, filterModel});
 
 render(new TitleView({
   title: 'Amsterdam - Chamonix - Geneva',

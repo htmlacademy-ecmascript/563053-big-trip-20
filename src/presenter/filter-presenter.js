@@ -23,12 +23,12 @@ export default class FilterPresenter {
   }
 
   get filters() {
-    const points = this.#pointsModel.get();
+    const points = this.#pointsModel.points;
     return generateFilters(points);
   }
 
   init() {
-    this.#currentFilter = this.#filterModel.get();
+    this.#currentFilter = this.#filterModel.filter;
 
     const prevFilterComponent = this.#filterComponent;
 

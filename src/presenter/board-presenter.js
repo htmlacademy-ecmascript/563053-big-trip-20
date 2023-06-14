@@ -35,8 +35,8 @@ export default class BoardPresenter {
   }
 
   get points() {
-    const filterType = this.#filterModel.get();
-    const filteredPoints = filter[filterType](this.#pointsModel.get());
+    const filterType = this.#filterModel.filter;
+    const filteredPoints = filter[filterType](this.#pointsModel.points);
 
     return this.#sortPoints(this.#currentSortType, filteredPoints);
   }

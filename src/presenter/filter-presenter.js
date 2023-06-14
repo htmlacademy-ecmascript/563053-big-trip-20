@@ -45,7 +45,6 @@ export default class FilterPresenter {
 
     replace(this.#filterComponent, prevFilterComponent);
     remove(prevFilterComponent);
-    //render(new FilterView(this.#filters), this.#container);
   }
 
   #modeEventHandler = () => {
@@ -53,6 +52,6 @@ export default class FilterPresenter {
   };
 
   #filterTypeChangeHandler = (filterType) => {
-    this.#filterModel.set(UpdateType.MAJOR, filterType);
+    this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
   };
 }

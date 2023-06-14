@@ -1,4 +1,4 @@
-import { SortType, UserAction } from '../const.js';
+import { SortType, UserAction, UpdateType } from '../const.js';
 import {render, remove, replace} from '../framework/render.js';
 import { filter } from '../utils/filter.js';
 import { getPointsDateDifference, getPointsDurationDifference, getPointsPriceDifference } from '../utils/point.js';
@@ -17,6 +17,7 @@ export default class BoardPresenter {
   #currentSortType = SortType.DAY;
   #filterModel = null;
   #handleModelEvent = null;
+  #isCreating = false;
 
   constructor({container, destinationsModel, offersModel, pointsModel, filterModel}) {
     this.#container = container;
@@ -25,13 +26,8 @@ export default class BoardPresenter {
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
 
-    this.#pointsModel.addObserver(this.#modeEventHandler);
-    this.#filterModel.addObserver(this.#modeEventHandler);
-  }
-
-  init() {
-
-    this.#renderBoard();
+    this.#pointsModel.addObserver(this.#modelEventHandler);
+    this.#filterModel.addObserver(this.#modelEventHandler);
   }
 
   get points() {
@@ -39,6 +35,11 @@ export default class BoardPresenter {
     const filteredPoints = filter[filterType](this.#pointsModel.points);
 
     return this.#sortPoints(this.#currentSortType, filteredPoints);
+  }
+
+  init() {
+
+    this.#renderBoard();
   }
 
   #sortPoints(sortType, filteredData) {
@@ -65,11 +66,6 @@ export default class BoardPresenter {
     }
   };
 
-  #clearPoints() {
-    this.#pointPresenters.forEach((presenter) => presenter.destroy());
-    this.#pointPresenters.clear();
-  }
-
   #renderSort() {
     const prevSortComponent = this.#sortComponent;
 
@@ -85,10 +81,6 @@ export default class BoardPresenter {
     } else {
       render(this.#sortComponent, this.#container);
     }
-  }
-
-  #renderPoints() {
-    this.points.forEach(this.#renderPoint);
   }
 
   #renderListComponent() {
@@ -108,6 +100,15 @@ export default class BoardPresenter {
     pointPresenter.init(point);
     this.#pointPresenters.set(point.id, pointPresenter);
   };
+
+  #renderPoints() {
+    this.points.forEach(this.#renderPoint);
+  }
+
+  #clearPoints() {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
+  }
 
   #renderBoard() {
     /*if (this.points.length === 0 && !this.#isCreating) {
@@ -143,16 +144,16 @@ export default class BoardPresenter {
     }
   };
 
-  #modeEventHandler = (updateType, data) => {
+  #modelEventHandler = (updateType, data) => {
     switch (updateType) {
-      case updateType.PATCH:
+      case UpdateType.PATCH:
         this.#pointPresenters.get(data.id)?.init(data);
         break;
-      case updateType.MINOR:
+      case UpdateType.MINOR:
         this.#clearBoard();
         this.#renderBoard();
         break;
-      case updateType.MAJOR:
+      case UpdateType.MAJOR:
         this.#clearBoard({resetSortType: true});
         this.#renderBoard();
         break;

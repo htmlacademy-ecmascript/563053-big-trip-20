@@ -53,13 +53,13 @@ export default class BoardPresenter {
         filteredData.sort(getPointsPriceDifference);
         break;
     }
-
     this.#currentSortType = sortType;
+    return filteredData;
   }
 
-  #handleSortTypeChange = (sortType) => {
+  #handleSortTypeChange = (sortType, filteredPoints) => {
     if (this.#currentSortType !== sortType) {
-      this.#sortPoints(sortType);
+      this.#sortPoints(sortType, filteredPoints);
       this.#clearPoints();
       this.#renderPoints();
     }
@@ -75,7 +75,8 @@ export default class BoardPresenter {
 
     this.#sortComponent = new SortView({
       sortType: this.#currentSortType,
-      onSortTypeChange: this.#handleSortTypeChange
+      onSortTypeChange: this.#handleSortTypeChange,
+      points: this.points
     });
 
     if (prevSortComponent) {

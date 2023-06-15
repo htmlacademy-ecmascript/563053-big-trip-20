@@ -2,6 +2,8 @@ import { render, replace, remove } from '../framework/render.js';
 import EditPointView from '../view/edit-point-view.js';
 import TripItemView from '../view/trip-item-view.js';
 
+import { UserAction, UpdateType } from '../const.js';
+
 const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING'
@@ -105,9 +107,22 @@ export default class PointPresenter {
   }
 
   #handleFormSubmit = (point) => {
-    this.#handleDataChange(point);
+
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      point);
+
     this.#replaceFormToPoints();
     document.removeEventListener('keydown', this.#onEscKeydown);
+  };
+
+  #handleDeleteClick = (task) => {
+    this.#handleDataChange(
+      UserAction.DELETE_TASK,
+      UpdateType.MAJOR,
+      task,
+    );
   };
 
   #handleClickEdit = () => {

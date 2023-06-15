@@ -16,8 +16,21 @@ export default class PointsModel extends Observable {
   }
 
   update(updateType, update) {
-    this.#points = this.#service.updatePoints(update);
+    const index = this.points.findIndex((point) => point.id === update.id);
+
+    if (index === -1) {
+      throw new Error('Can\'t update unexisting point');
+    }
+
+    this.#points = [
+      ...this.points.slice(0, index),
+      update,
+      ...this.points.slice(index + 1),
+    ];
+
     this._notify(updateType, update);
+    /*this.#points = this.#service.updatePoints(update);
+    this._notify(updateType, update);*/
   }
 
   add(updateType, point) {

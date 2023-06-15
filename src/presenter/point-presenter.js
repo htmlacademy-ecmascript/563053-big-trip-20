@@ -51,6 +51,7 @@ export default class PointPresenter {
       offers: this.#offersModel.getByType(point.type),
       onFormSubmit: this.#handleFormSubmit,
       onCloseClick: this.#handleClickClose,
+      onDeleteClick: this.#handleDeleteClick,
       getOffersByType: (type) => this.#offersModel.getByType(type)}
     );
 
@@ -117,11 +118,11 @@ export default class PointPresenter {
     document.removeEventListener('keydown', this.#onEscKeydown);
   };
 
-  #handleDeleteClick = (task) => {
+  #handleDeleteClick = (point) => {
     this.#handleDataChange(
-      UserAction.DELETE_TASK,
+      UserAction.DELETE_POINT,
       UpdateType.MAJOR,
-      task,
+      point,
     );
   };
 

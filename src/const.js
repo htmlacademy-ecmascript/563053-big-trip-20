@@ -18,5 +18,10 @@ const UpdateType = {
   MAJOR: 'MAJOR',
 };
 
+const EditType = {
+  EDITING: 'EDITING',
+  CREATING: 'CREATING'
+};
 
-export {SortType, UserAction, UpdateType};
+
+export {SortType, UserAction, UpdateType, EditType};

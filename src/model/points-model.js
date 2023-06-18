@@ -29,12 +29,14 @@ export default class PointsModel extends Observable {
     ];
 
     this._notify(updateType, update);
-    /*this.#points = this.#service.updatePoints(update);
-    this._notify(updateType, update);*/
   }
 
   add(updateType, point) {
-    this.#points = this.#service.addPoint(point);
+    this.#points = [
+      point,
+      ...this.points,
+    ];
+
     this._notify(updateType, point);
   }
 

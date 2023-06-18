@@ -52,8 +52,10 @@ export default class PointPresenter {
       onFormSubmit: this.#handleFormSubmit,
       onCloseClick: this.#handleClickClose,
       onDeleteClick: this.#handleDeleteClick,
-      getOffersByType: (type) => this.#offersModel.getByType(type)}
-    );
+      getDestinationById: (destination) => this.#destinationModel.getById(destination),
+      getOffersByType: (type) => this.#offersModel.getByType(type),
+      getDestinationByCity: (city) => this.#destinationModel.getByCity(city)
+    });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       return render(this.#pointComponent, this.#container);
@@ -85,7 +87,10 @@ export default class PointPresenter {
   }
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      {...this.#point, isFavorite: !this.#point.isFavorite});
   };
 
   #onEscKeydown = (evt) => {

@@ -29,7 +29,7 @@ const filterPresenter = new FilterPresenter({
   filterModel
 });
 
-const boardPresenter = new BoardPresenter({container: tripEventsContainer, destinationsModel, offersModel, pointsModel, filterModel});
+const boardPresenter = new BoardPresenter({container: tripEventsContainer, newPointButtonContainer: tripMain, destinationsModel, offersModel, pointsModel, filterModel});
 
 render(new TitleView({
   title: 'Amsterdam - Chamonix - Geneva',

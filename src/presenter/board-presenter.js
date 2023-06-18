@@ -1,14 +1,18 @@
 import { SortType, UserAction, UpdateType } from '../const.js';
 import {render, remove, replace} from '../framework/render.js';
-import { filter } from '../utils/filter.js';
+import { filter, FilterType } from '../utils/filter.js';
 import { getPointsDateDifference, getPointsDurationDifference, getPointsPriceDifference } from '../utils/point.js';
 import EventListView from '../view/event-list-view.js';
+import NewPointButtonView from '../view/new-button-view.js';
 import SortView from '../view/sort-view.js';
+import NewPointPresenter from './new-point-presenter.js';
 import PointPresenter from './point-presenter.js';
+import MessageView from '../view/message-view.js';
 
 export default class BoardPresenter {
   #eventListComponent = new EventListView();
   #container = null;
+  #newPointButtonContainer = null;
   #destinationModel = null;
   #offersModel = null;
   #pointsModel = null;
@@ -16,15 +20,27 @@ export default class BoardPresenter {
   #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
   #filterModel = null;
+  #newPointPresenter = null;
+  #newPointButton = null;
+  #messageComponent;
   #handleModelEvent = null;
   #isCreating = false;
 
-  constructor({container, destinationsModel, offersModel, pointsModel, filterModel}) {
+  constructor({container, newPointButtonContainer, destinationsModel, offersModel, pointsModel, filterModel}) {
     this.#container = container;
+    this.#newPointButtonContainer = newPointButtonContainer;
     this.#destinationModel = destinationsModel;
     this.#offersModel = offersModel;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
+
+    this.#newPointPresenter = new NewPointPresenter({
+      container: this.#eventListComponent.element,
+      destinationsModel: this.#destinationModel,
+      offersModel: this.#offersModel,
+      onDataChange: this.#viewActionHandler,
+      onDestroy: this.#newPointDestroyHandler
+    });
 
     this.#pointsModel.addObserver(this.#modelEventHandler);
     this.#filterModel.addObserver(this.#modelEventHandler);
@@ -38,7 +54,8 @@ export default class BoardPresenter {
   }
 
   init() {
-
+    this.#newPointButton = new NewPointButtonView ({onclick: this.#newPointButtonClickHandler});
+    render(this.#newPointButton, this.#newPointButtonContainer);
     this.#renderBoard();
   }
 
@@ -58,14 +75,6 @@ export default class BoardPresenter {
     return filteredData;
   }
 
-  #handleSortTypeChange = (sortType, filteredPoints) => {
-    if (this.#currentSortType !== sortType) {
-      this.#sortPoints(sortType, filteredPoints);
-      this.#clearPoints();
-      this.#renderPoints();
-    }
-  };
-
   #renderSort() {
     const prevSortComponent = this.#sortComponent;
 
@@ -82,6 +91,15 @@ export default class BoardPresenter {
       render(this.#sortComponent, this.#container);
     }
   }
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType !== sortType) {
+      this.#currentSortType = sortType;
+      this.#clearPoints();
+      this.#renderSort();
+      this.#renderPoints();
+    }
+  };
 
   #renderListComponent() {
     render(this.#eventListComponent, this.#container);
@@ -110,11 +128,16 @@ export default class BoardPresenter {
     this.#pointPresenters.clear();
   }
 
+  #renderMessage() {
+    this.#messageComponent = new MessageView({filterType: this.#filterModel.filter});
+    render(this.#messageComponent, this.#container);
+  }
+
   #renderBoard() {
-    /*if (this.points.length === 0 && !this.#isCreating) {
+    if (this.points.length === 0 && !this.#isCreating) {
       this.#renderMessage();
       return;
-    }*/
+    }
 
     this.#renderSort();
     this.#renderListComponent();
@@ -123,7 +146,9 @@ export default class BoardPresenter {
 
   #clearBoard = ({resetSortType = false} = {}) => {
     this.#clearPoints();
-    //remove(this.#messageComponent);
+    if (this.#messageComponent) {
+      remove(this.#messageComponent);
+    }
 
     if (resetSortType) {
       this.#currentSortType = SortType.DAY;
@@ -162,6 +187,24 @@ export default class BoardPresenter {
 
   #modeChangeHandler = () => {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
-    //this.#newPointPresenter.destroy();
+    this.#newPointPresenter.destroy();
+  };
+
+  #newPointButtonClickHandler = () => {
+    this.#isCreating = true;
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newPointButton.setDisabled(true);
+    this.#newPointPresenter.init();
+  };
+
+  #newPointDestroyHandler = () => {
+    this.#isCreating = false;
+    this.#newPointButton.setDisabled(false);
+    if (this.points.length === 0) {
+      remove(this.#sortComponent);
+      this.#sortComponent = null;
+      this.#renderMessage();
+    }
   };
 }

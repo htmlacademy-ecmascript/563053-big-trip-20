@@ -1,14 +1,25 @@
 import Observable from '../framework/observable.js';
+import { UpdateType } from '../const.js';
 
 export default class PointsModel extends Observable {
 
-  #service = null;
-  #points = null;
+  #points = [];
+  #pointApiService = null;
 
-  constructor (service) {
+  constructor ({pointApiService}) {
     super();
-    this.#service = service;
-    this.#points = this.#service.getPoints();
+    this.#pointApiService = pointApiService;
+  }
+
+  async init() {
+    try {
+      const points = await this.#pointApiService.points;
+      this.#points = points.map(this.#adaptToClient);
+    } catch(err) {
+      this.#points = [];
+    }
+
+    this._notify(UpdateType.INIT);
   }
 
   get points() {
@@ -53,5 +64,22 @@ export default class PointsModel extends Observable {
     ];
 
     this._notify(updateType);
+  }
+
+  #adaptToClient(point) {
+    const adaptedPoint = {...point,
+      dateFrom: point['date_from'] !== null ? new Date(point['date_from']) : point['date_from'],
+      dateTo: point['date_to'] !== null ? new Date(point['date_to']) : point['date_to'],
+      isFavorite: point['is_favorite'],
+      basePrice: point['base_price'],
+    };
+
+    // Ненужные ключи мы удаляем
+    delete adaptedPoint['date_from'];
+    delete adaptedPoint['date_to'];
+    delete adaptedPoint['is_favorite'];
+    delete adaptedPoint['base_price'];
+
+    return adaptedPoint;
   }
 }

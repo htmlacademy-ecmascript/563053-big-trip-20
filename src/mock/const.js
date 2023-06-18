@@ -15,7 +15,12 @@ const POINT_EMPTY = {
   basePrice: 0,
   dateFrom: null,
   dateTo: null,
-  destination: null,
+  destination: {
+    id: '',
+    description: '',
+    name: '',
+    pictures: []
+  },
   isFavorite: false,
   offers: [],
   type: DEFAULT_TYPE

@@ -12,7 +12,11 @@ export default class DestinationsModel {
     return this.#destinations;
   }
 
-  /*getById(id) {
+  getByCity(city) {
+    return this.#destinations.find((pointDestination) => pointDestination.name === city);
+  }
+
+  getById(id) {
     return this.#destinations.find((destination) => destination.id === id);
-  }*/
+  }
 }

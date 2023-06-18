@@ -2,6 +2,8 @@ import { render, replace, remove } from '../framework/render.js';
 import EditPointView from '../view/edit-point-view.js';
 import TripItemView from '../view/trip-item-view.js';
 
+import { UserAction, UpdateType } from '../const.js';
+
 const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING'
@@ -49,8 +51,11 @@ export default class PointPresenter {
       offers: this.#offersModel.getByType(point.type),
       onFormSubmit: this.#handleFormSubmit,
       onCloseClick: this.#handleClickClose,
-      getOffersByType: (type) => this.#offersModel.getByType(type)}
-    );
+      onDeleteClick: this.#handleDeleteClick,
+      getDestinationById: (destination) => this.#destinationModel.getById(destination),
+      getOffersByType: (type) => this.#offersModel.getByType(type),
+      getDestinationByCity: (city) => this.#destinationModel.getByCity(city)
+    });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       return render(this.#pointComponent, this.#container);
@@ -82,7 +87,10 @@ export default class PointPresenter {
   }
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      {...this.#point, isFavorite: !this.#point.isFavorite});
   };
 
   #onEscKeydown = (evt) => {
@@ -105,9 +113,22 @@ export default class PointPresenter {
   }
 
   #handleFormSubmit = (point) => {
-    this.#handleDataChange(point);
+
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      point);
+
     this.#replaceFormToPoints();
     document.removeEventListener('keydown', this.#onEscKeydown);
+  };
+
+  #handleDeleteClick = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MAJOR,
+      point,
+    );
   };
 
   #handleClickEdit = () => {

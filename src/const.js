@@ -6,4 +6,22 @@ const SortType = {
   OFFERS: 'offers'
 };
 
-export {SortType};
+const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const EditType = {
+  EDITING: 'EDITING',
+  CREATING: 'CREATING'
+};
+
+
+export {SortType, UserAction, UpdateType, EditType};

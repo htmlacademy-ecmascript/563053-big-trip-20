@@ -8,8 +8,6 @@ import OfferModel from './model/offers-model.js';
 import PointsModel from './model/points-model.js';
 import FilterModel from './model/filter-model.js';
 import PointsApiService from './service/points-api-service.js';
-import DestinationsApiService from './service/destinations-api-service.js';
-import OffersApiService from './service/offers-api-service.js';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration.js';
 
@@ -21,15 +19,16 @@ dayjs.extend(duration);
 const tripMain = document.querySelector('.trip-main');
 const filterForm = document.querySelector('.trip-controls__filters');
 const tripEventsContainer = document.querySelector('.trip-events');
-const destinationsModel = new DestinationsModel({destinationsApiService: new DestinationsApiService(END_POINT, AUTHORIZATION)});
-const offersModel = new OfferModel({offersApiService: new OffersApiService(END_POINT, AUTHORIZATION)});
-const pointsModel = new PointsModel({pointApiService: new PointsApiService(END_POINT, AUTHORIZATION)});
+
+const pointsApiService = new PointsApiService(END_POINT, AUTHORIZATION);
+const destinationsModel = new DestinationsModel(pointsApiService);
+const offersModel = new OfferModel(pointsApiService);
+const pointsModel = new PointsModel({
+  service: pointsApiService,
+  destinationsModel,
+  offersModel
+});
 const filterModel = new FilterModel();
-
-pointsModel.init();
-offersModel.init();
-destinationsModel.init();
-
 
 const filterPresenter = new FilterPresenter({
   container: filterForm,
@@ -45,7 +44,7 @@ render(new TitleView({
   dateTo: new Date(),
   price: 1230,
 }), tripMain, RenderPosition.AFTERBEGIN);
-
+pointsModel.init();
 filterPresenter.init();
 boardPresenter.init();
 

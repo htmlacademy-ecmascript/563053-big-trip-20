@@ -4,16 +4,24 @@ import { UpdateType } from '../const.js';
 export default class PointsModel extends Observable {
 
   #points = [];
-  #pointApiService = null;
+  #service = null;
+  #destinationsModel = null;
+  #offersModel = null;
 
-  constructor ({pointApiService}) {
+  constructor ({service, destinationsModel, offersModel}) {
     super();
-    this.#pointApiService = pointApiService;
+    this.#service = service;
+    this.#destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
   }
 
   async init() {
     try {
-      const points = await this.#pointApiService.points;
+      await Promise.all([
+        this.#destinationsModel.init(),
+        this.#offersModel.init()
+      ]);
+      const points = await this.#service.getPoints();
       this.#points = points.map(this.#adaptToClient);
     } catch(err) {
       this.#points = [];
@@ -26,20 +34,25 @@ export default class PointsModel extends Observable {
     return this.#points;
   }
 
-  update(updateType, update) {
+  async update(updateType, update) {
     const index = this.points.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
       throw new Error('Can\'t update unexisting point');
     }
 
-    this.#points = [
-      ...this.points.slice(0, index),
-      update,
-      ...this.points.slice(index + 1),
-    ];
-
-    this._notify(updateType, update);
+    try {
+      const response = await this.#service.updatePoint(update);
+      const updatedPoint = this.#adaptToClient(response);
+      this.#points = [
+        ...this.points.slice(0, index),
+        updatedPoint,
+        ...this.points.slice(index + 1),
+      ];
+      this._notify(updateType, update);
+    } catch(err) {
+      throw new Error('Can\'t update task');
+    }
   }
 
   add(updateType, point) {

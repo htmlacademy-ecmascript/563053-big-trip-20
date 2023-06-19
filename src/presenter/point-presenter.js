@@ -39,15 +39,15 @@ export default class PointPresenter {
 
     this.#pointComponent = new TripItemView({
       point1: this.#point,
-      pointDestinations: this.#destinationModel.destinations,
-      pointOffers: this.#offersModel.offers,
+      pointDestinations: this.#destinationModel.get(),
+      pointOffers: this.#offersModel.get(),
       onEditClick: this.#handleClickEdit,
       onFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#editPointComponent = new EditPointView({
       point,
-      pointDestinations: this.#destinationModel.destinations,
+      pointDestinations: this.#destinationModel.get(),
       offers: this.#offersModel.getByType(point.type),
       onFormSubmit: this.#handleFormSubmit,
       onCloseClick: this.#handleClickClose,

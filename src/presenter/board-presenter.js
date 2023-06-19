@@ -8,6 +8,7 @@ import SortView from '../view/sort-view.js';
 import NewPointPresenter from './new-point-presenter.js';
 import PointPresenter from './point-presenter.js';
 import MessageView from '../view/message-view.js';
+import LoadingView from '../view/loading-view.js';
 
 export default class BoardPresenter {
   #eventListComponent = new EventListView();
@@ -25,6 +26,8 @@ export default class BoardPresenter {
   #messageComponent;
   #handleModelEvent = null;
   #isCreating = false;
+  #isLoading = true;
+  #loadingComponent = new LoadingView();
 
   constructor({container, newPointButtonContainer, destinationsModel, offersModel, pointsModel, filterModel}) {
     this.#container = container;
@@ -133,7 +136,15 @@ export default class BoardPresenter {
     render(this.#messageComponent, this.#container);
   }
 
+  #renderLoading() {
+    render(this.#loadingComponent, this.#container);
+  }
+
   #renderBoard() {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
     if (this.points.length === 0 && !this.#isCreating) {
       this.#renderMessage();
       return;
@@ -180,6 +191,11 @@ export default class BoardPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearBoard({resetSortType: true});
+        this.#renderBoard();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderBoard();
         break;
     }

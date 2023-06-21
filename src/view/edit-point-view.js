@@ -24,17 +24,17 @@ const ButtonLabel = {
   [EditType.CREATING]: 'Cancel'
 };
 
-function createDeleteButtonTemplate ({typeButton}) {
-  return `<button class= "event__reset-btn" type="reset">${ButtonLabel[typeButton]}</button>`;
+function createDeleteButtonTemplate ({typeButton, isDisabled, isDeleting}) {
+  return `<button class= "event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : ButtonLabel[typeButton]}</button>`;
 }
 
 function createRollupButtonTemplate () {
   return '<button class= "event__rollup-btn" type="button"><span class="visually-hidden">Open event</span></button>';
 }
 
-function createPointEditControlTemplate ({typeButton}) {
-  return `<button class= "event__save-btn btn btn-blue" type="submit">Save</button>
-  ${createDeleteButtonTemplate({typeButton})}
+function createPointEditControlTemplate ({typeButton, isDisabled, isSaving, isDeleting}) {
+  return `<button class= "event__save-btn btn btn-blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+  ${createDeleteButtonTemplate({typeButton, isDisabled, isDeleting})}
   ${(typeButton !== EditType.CREATING) ? createRollupButtonTemplate() : ''}`;
 }
 
@@ -50,7 +50,7 @@ function createTypesTemplate () {
 }
 
 
-function createOfferTemplate (offersData, checkedIDs) {
+function createOfferTemplate (offersData, checkedIDs, OffersByType) {
   const checkboxesMarkup = offersData.map((offer) =>
     `<div class="event__offer-selector">
 <input class="event__offer-checkbox  visually-hidden" value="${offer.id}" id="${offer.id}" type="checkbox" name=${OFFFER_CHECKBOX_NAME} ${checkedIDs.includes(offer.id) ? 'checked' : ''}>
@@ -61,15 +61,20 @@ function createOfferTemplate (offersData, checkedIDs) {
 </label>
 </div>`).join('');
 
-  return `
-<section class="event__section  event__section--offers">
-<h3 class="event__section-title  event__section-title--offers">Offers</h3>
+  if (OffersByType.length !== 0) {
+    return `
+  <section class="event__section  event__section--offers">
+  <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
-<div class="event__available-offers">
-${checkboxesMarkup}
-</div>
-</section>
-  `;
+  <div class="event__available-offers">
+  ${checkboxesMarkup}
+  </div>
+  </section>
+    `;
+  } else {
+    return '';
+  }
+
 }
 
 function createPhotoTemplate (pictures) {
@@ -84,8 +89,26 @@ function createDestinationList (pointDestinations) {
   ).join('');
 }
 
+function createDestinationTemplate (destination) {
 
-function getEditPointTemplate ({point, pointDestinations, offers, typeButton}, getOffersByType, getDestinationById) {
+  if (destination) {
+    return `
+  <section class="event__section  event__section--destination">
+  <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+  <p class="event__destination-description">${destination ? destination.description : ''}</p>
+  <div class="event__photos-container">
+    <div class="event__photos-tape">
+      ${createPhotoTemplate(destination ? destination.pictures : [])}
+    </div>
+  </div>
+</section>`;
+  } else {
+    return '';
+  }
+}
+
+
+function getEditPointTemplate ({point, pointDestinations, offers, typeButton, isDisabled, isSaving, isDeleting}, getOffersByType, getDestinationById) {
 
   const {
     basePrice, dateFrom, dateTo, type
@@ -140,24 +163,16 @@ function getEditPointTemplate ({point, pointDestinations, offers, typeButton}, g
                     </label>
                     <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
                   </div>
-                    ${createPointEditControlTemplate({typeButton})}
+                    ${createPointEditControlTemplate({typeButton, isDisabled, isDeleting, isSaving})}
 
                     <span class="visually-hidden">Open event</span>
                   </button>
                 </header>
 
                 <section class="event__details">
-                ${typeButton === EditType.EDITING ? createOfferTemplate(offers, point.offers) : createOfferTemplate(OffersByType, point.offers)}
+                ${typeButton === EditType.EDITING ? createOfferTemplate(offers, point.offers, OffersByType) : createOfferTemplate(OffersByType, point.offers, OffersByType)}
 
-                  <section class="event__section  event__section--destination">
-                    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                    <p class="event__destination-description">${destination ? destination.description : ''}</p>
-                    <div class="event__photos-container">
-                      <div class="event__photos-tape">
-                    ${createPhotoTemplate(destination ? destination.pictures : [])}
-                      </div>
-                    </div>
-                  </section>
+                  ${createDestinationTemplate(destination)}
                 </section>
               </form>
               </li>
@@ -185,6 +200,9 @@ export default class EditPointView extends AbstractStatefulView {
       offers,
       pointDestinations,
       typeButton,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false
     });
     this.#pointDestinations = pointDestinations;
     this.#onFormSubmit = onFormSubmit;
@@ -343,7 +361,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #onFormDeleteHandler = (evt) => {
     evt.preventDefault();
-    this.#onDeleteClick({...this._state.point});
+    this.#onDeleteClick({...this._state.point,});
   };
 
   #onFormCancelHandler = (evt) => {

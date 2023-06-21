@@ -113,15 +113,16 @@ export default class PointPresenter {
   }
 
   #handleFormSubmit = (point) => {
-
     this.#handleDataChange(
       UserAction.UPDATE_POINT,
       UpdateType.MINOR,
       point);
+  };
 
+  setSuccesUpdate() {
     this.#replaceFormToPoints();
     document.removeEventListener('keydown', this.#onEscKeydown);
-  };
+  }
 
   #handleDeleteClick = (point) => {
     this.#handleDataChange(
@@ -140,4 +141,38 @@ export default class PointPresenter {
     this.#replaceFormToPoints();
     document.addEventListener('keydown', this.#onEscKeydown);
   };
+
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editPointComponent.updateElement({
+        isDisabled: true,
+        isSaving: true
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editPointComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#pointComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#editPointComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+    this.#editPointComponent.shake(resetFormState);
+  }
 }

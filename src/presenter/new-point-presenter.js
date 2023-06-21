@@ -37,8 +37,8 @@ export default class NewPointPresenter {
 
     this.#pointNewComponent = new EditPointView({
       point: POINT_EMPTY,
-      pointDestinations: this.#destinationModel.destinations,
-      offers: this.#offersModel,
+      pointDestinations: this.#destinationModel.get(),
+      offers: this.#offersModel.get(),
       onFormSubmit: this.#formSubmitHandler,
       onCloseClick: this.#handleClickClose,
       typeButton: EditType.CREATING,
@@ -64,33 +64,12 @@ export default class NewPointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
-  setSaving() {
-    this._eventEditComponent.updateData({
-      isDisabled: true,
-      isSaving: true,
-    });
-  }
-
-  setAborting() {
-    const resetFormState = () => {
-      this._eventEditComponent.updateData({
-        isDisabled: false,
-        isSaving: false,
-        isDeleting: false,
-      });
-    };
-
-    this._eventEditComponent.shake(resetFormState);
-  }
-
   #formSubmitHandler = (point) => {
     this.#handleDataChange(
       UserAction.CREATE_POINT,
       UpdateType.MINOR,
-      {id: crypto.randomUUID(),
-        ...point},
+      {...point},
     );
-    this.destroy();
   };
 
   #handleClickClose = () => {
@@ -103,4 +82,22 @@ export default class NewPointPresenter {
       this.destroy();
     }
   };
+
+  setSaving() {
+    this.#pointNewComponent.updateElement({
+      isDisabled: true,
+      isSaving: true
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#pointNewComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+    this.#pointNewComponent.shake(resetFormState);
+  }
 }

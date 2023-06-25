@@ -91,7 +91,6 @@ name=${OFFFER_CHECKBOX_NAME} ${checkedIDs.includes(offer.id) ? 'checked' : ''}>
   </section>
     `;
   } return '';
-
 }
 
 function createPhotoTemplate (pictures) {

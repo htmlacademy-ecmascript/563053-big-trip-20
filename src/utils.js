@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration.js';
 
-
 dayjs.extend(duration);
 
 const MSEC_IN_SEC = 1000;
@@ -48,4 +47,4 @@ function getPointDuration(dateFrom, dateTo) {
   return pointDuration;
 }
 
-export {getRandomInteger, getRandomArrayElement, formatStringToDateTime, formatStringToShortDate, formatStringToTime, getPointDuration};
+export {getRandomInteger, getRandomArrayElement, formatStringToDateTime, formatStringToShortDate, formatStringToTime, getPointDuration, dayjs};

@@ -78,8 +78,6 @@ export default class PointPresenter {
     remove(this.#editPointComponent);
   }
 
-  #onChangeOfferType = () => this.#offersModel.getByType(this.point.type);
-
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
       this.#replaceFormToPoints();
@@ -139,7 +137,7 @@ export default class PointPresenter {
 
   #handleClickClose = () => {
     this.#replaceFormToPoints();
-    document.addEventListener('keydown', this.#onEscKeydown);
+    document.removeEventListener('keydown', this.#onEscKeydown);
   };
 
   setSaving() {

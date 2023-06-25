@@ -44,7 +44,7 @@ export default class SortView extends AbstractView {
   }
 
   get template() {
-    return createSortViewTemplate(this.#sortType);
+    return createSortViewTemplate(this.#sortType, this.#filteredPoints);
   }
 
   #sortTypeChangeHandler = (evt) => {

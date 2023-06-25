@@ -24,5 +24,7 @@ const EditType = {
   CREATING: 'CREATING'
 };
 
+const DESTINATION_ITEMS_LENGTH = 2;
 
-export {SortType, UserAction, UpdateType, EditType};
+
+export {SortType, UserAction, UpdateType, EditType, DESTINATION_ITEMS_LENGTH};

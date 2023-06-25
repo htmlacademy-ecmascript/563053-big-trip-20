@@ -356,7 +356,6 @@ function getEditPointTemplate ({point, pointDestinations, offers, typeButton, is
     }
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onFormCancelHandler);
 
-
     this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
 
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationInputChange);

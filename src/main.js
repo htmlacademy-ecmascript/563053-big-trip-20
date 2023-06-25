@@ -1,20 +1,14 @@
-import {render, RenderPosition} from '../src/framework/render.js';
-
-import TitleView from './view/title-view.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
+import TripInfoPresenter from './presenter/trip-info-presenter.js';
 import DestinationsModel from './model/destination-model.js';
 import OfferModel from './model/offers-model.js';
 import PointsModel from './model/points-model.js';
 import FilterModel from './model/filter-model.js';
 import PointsApiService from './service/points-api-service.js';
-import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration.js';
-
-const AUTHORIZATION = 'Basic somebasicstring465124';
+const AUTHORIZATION = 'Basic somebasicstring46512345';
 const END_POINT = 'https://20.ecmascript.pages.academy/big-trip';
 
-dayjs.extend(duration);
 
 const tripMain = document.querySelector('.trip-main');
 const filterForm = document.querySelector('.trip-controls__filters');
@@ -36,14 +30,11 @@ const filterPresenter = new FilterPresenter({
   filterModel
 });
 
+const titlePresenter = new TripInfoPresenter({container: tripMain, pointsModel, destinationsModel, offersModel});
+
 const boardPresenter = new BoardPresenter({container: tripEventsContainer, newPointButtonContainer: tripMain, destinationsModel, offersModel, pointsModel, filterModel});
 
-render(new TitleView({
-  title: 'Amsterdam - Chamonix - Geneva',
-  dateFrom: dayjs(new Date()).subtract(20, 'day').toDate(),
-  dateTo: new Date(),
-  price: 1230,
-}), tripMain, RenderPosition.AFTERBEGIN);
+titlePresenter.init();
 pointsModel.init();
 filterPresenter.init();
 boardPresenter.init();

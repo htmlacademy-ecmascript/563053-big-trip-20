@@ -1,7 +1,7 @@
 import { SortType, UserAction, UpdateType } from '../const.js';
+import {sortPoints} from '../utils/sort.js';
 import {render, remove, replace} from '../framework/render.js';
 import { filter, FilterType } from '../utils/filter.js';
-import { getPointsDateDifference, getPointsDurationDifference, getPointsPriceDifference } from '../utils/point.js';
 import EventListView from '../view/event-list-view.js';
 import NewPointButtonView from '../view/new-button-view.js';
 import SortView from '../view/sort-view.js';
@@ -63,7 +63,7 @@ export default class BoardPresenter {
     const filterType = this.#filterModel.filter;
     const filteredPoints = filter[filterType](this.#pointsModel.points);
 
-    return this.#sortPoints(this.#currentSortType, filteredPoints);
+    return sortPoints(this.#currentSortType, filteredPoints);
   }
 
   init() {
@@ -72,37 +72,24 @@ export default class BoardPresenter {
     this.#renderBoard();
   }
 
-  #sortPoints(sortType, filteredData) {
-    switch (sortType) {
-      case SortType.DAY:
-        filteredData.sort(getPointsDateDifference);
-        break;
-      case SortType.TIME:
-        filteredData.sort(getPointsDurationDifference);
-        break;
-      case SortType.PRICE:
-        filteredData.sort(getPointsPriceDifference);
-        break;
-    }
-    this.#currentSortType = sortType;
-    return filteredData;
-  }
-
   #renderSort() {
-    const prevSortComponent = this.#sortComponent;
+    if (this.points.length !== 0) {
+      const prevSortComponent = this.#sortComponent;
 
-    this.#sortComponent = new SortView({
-      sortType: this.#currentSortType,
-      onSortTypeChange: this.#handleSortTypeChange,
-      points: this.points
-    });
+      this.#sortComponent = new SortView({
+        sortType: this.#currentSortType,
+        onSortTypeChange: this.#handleSortTypeChange,
+        points: this.points
+      });
 
-    if (prevSortComponent) {
-      replace(this.#sortComponent, prevSortComponent);
-      remove(prevSortComponent);
-    } else {
-      render(this.#sortComponent, this.#container);
+      if (prevSortComponent) {
+        replace(this.#sortComponent, prevSortComponent);
+        remove(prevSortComponent);
+      } else {
+        render(this.#sortComponent, this.#container);
+      }
     }
+
   }
 
   #handleSortTypeChange = (sortType) => {
@@ -152,12 +139,10 @@ export default class BoardPresenter {
 
   #renderBoard() {
     if (this.#isLoading) {
-      this.#renderLoading();
-      return;
+      return this.#renderLoading();
     }
     if (this.points.length === 0 && !this.#isCreating) {
-      this.#renderMessage();
-      return;
+      return this.#renderMessage();
     }
 
     this.#renderSort();
@@ -165,16 +150,21 @@ export default class BoardPresenter {
     this.#renderPoints();
   }
 
-  #clearBoard = ({resetSortType = false} = {}) => {
+  #clearBoard({resetSortType = false} = {}) {
     this.#clearPoints();
     if (this.#messageComponent) {
       remove(this.#messageComponent);
     }
 
+    if (this.points.length === 0) {
+      remove(this.#sortComponent);
+      this.#sortComponent = null;
+    }
+
     if (resetSortType) {
       this.#currentSortType = SortType.DAY;
     }
-  };
+  }
 
   #viewActionHandler = async (actionType, updateType, update) => {
     this.#uiBlocker.block();
@@ -190,12 +180,12 @@ export default class BoardPresenter {
         }
         break;
       case UserAction.DELETE_POINT:
+        currentPointPresenter?.setDeleting();
         try {
           await this.#pointsModel.delete(updateType, update);
         } catch(err) {
-          currentPointPresenter.setAborting();
+          currentPointPresenter?.setAborting();
         }
-        currentPointPresenter.setDeleting();
 
         break;
       case UserAction.CREATE_POINT:

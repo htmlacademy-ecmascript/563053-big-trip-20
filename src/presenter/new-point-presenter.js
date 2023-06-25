@@ -1,7 +1,7 @@
 import EditPointView from '../view/edit-point-view.js';
 import {render, remove, RenderPosition} from '../framework/render.js';
 import {UserAction, UpdateType, EditType} from '../const.js';
-import { POINT_EMPTY } from '../mock/const.js';
+
 
 export default class NewPointPresenter {
 
@@ -36,7 +36,6 @@ export default class NewPointPresenter {
     }
 
     this.#pointNewComponent = new EditPointView({
-      point: POINT_EMPTY,
       pointDestinations: this.#destinationModel.get(),
       offers: this.#offersModel.get(),
       onFormSubmit: this.#formSubmitHandler,
